@@ -1,16 +1,22 @@
 import mongoose from "../database.js";
 
-const ReportSchema = new mongoose.Schema({
-  user_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const ReportSchema = new mongoose.Schema(
+  {
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    video_url: { type: String, unique: true, required: true },
+    cam_name: { type: String, required: true },
+    status: { type: Number, required: true },
+    tel: { type: String, required: true },
   },
-  video_url: { type: String, unique: true, required: true },
-  cam_name: { type: String, required: true },
-  situation: { type: String, required: true },
-  status: { type: Number, required: true },
-});
+  {
+    versionKey: false, // `_v` 필드 비활성화
+    timestamps: true, // `createdAt`, `updatedAt` 자동 추가
+  }
+);
 
 const Report = mongoose.model("Report", ReportSchema);
 

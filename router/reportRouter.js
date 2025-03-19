@@ -1,24 +1,35 @@
 import express from "express";
-import {
-  getReports,
-  createReport,
-  getReportById,
-  updateReport,
-  deleteReport,
-} from "../data/report.js";
 
-const router = express.Router();
+const reportRouter = (io, connectedClients) => {
+  const router = express.Router();
 
-router.get("/", async (req, res) => res.json(await getReports()));
-router.post("/", async (req, res) => res.json(await createReport(req.body)));
-router.get("/:id", async (req, res) =>
-  res.json(await getReportById(req.params.id))
-);
-router.put("/:id", async (req, res) =>
-  res.json(await updateReport(req.params.id, req.body))
-);
-router.delete("/:id", async (req, res) =>
-  res.json(await deleteReport(req.params.id))
-);
+  // 🔹 특정 tel을 가진 클라이언트에게 메시지 전송 API
+  router.post("/send-message", (req, res) => {
+    const { tel, message } = req.body;
 
-export default router;
+    if (!tel || !message) {
+      return res
+        .status(400)
+        .json({ status: false, message: "tel과 message가 필요합니다." });
+    }
+
+    const targetSocketId = connectedClients[tel]; // 해당 tel에 해당하는 소켓 ID 가져오기
+    if (targetSocketId) {
+      io.to(targetSocketId).emit("private_message", message); // 특정 클라이언트에게 메시지 전송
+      console.log(`📩 ${tel}에게 메시지 전송됨: ${message}`);
+      return res.json({ status: true, message: "메시지 전송 성공" });
+    } else {
+      console.log(`❌ ${tel}님은 현재 연결되어 있지 않습니다.`);
+      return res
+        .status(404)
+        .json({
+          status: false,
+          message: "해당 전화번호의 클라이언트가 연결되어 있지 않습니다.",
+        });
+    }
+  });
+
+  return router;
+};
+
+export default reportRouter;
