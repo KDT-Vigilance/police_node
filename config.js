@@ -22,8 +22,7 @@ export const config = {
   },
 
   jwt: {
-    user_secretKey: getEnvValue("USER_JWT_SECRET"),
-    employer_secretKey: getEnvValue("EMPLOYER_JWT_SECRET"),
+    secretKey: getEnvValue("JWT_SECRET"),
     expiresInSec: parseInt(getEnvValue("JWT_EXPIRES_SEC", 259200)),
   },
 
@@ -43,5 +42,17 @@ export const config = {
     apiKey: getEnvValue("API_KEY"),
     apiSecretKey: getEnvValue("API_SECRET"),
     hpNumber: getEnvValue("MY_NUMBER"),
+  },
+
+  aws: {
+    bucket_name: getEnvValue("AWS_BUCKET_NAME"),
+    bucket_region: getEnvValue("AWS_BUCKET_REGION"),
+    access_key: getEnvValue("AWS_ACCESS_KEY"),
+    secret_key: getEnvValue("AWS_SECRET_KEY"),
+    bucket_directory: getEnvValue("AWS_BUCKET_DIRECTORY"),
+  },
+
+  kakao: {
+    apiKey: getEnvValue("KAKAO_REST_API_KEY"),
   },
 };
