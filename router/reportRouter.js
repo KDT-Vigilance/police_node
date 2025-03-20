@@ -11,7 +11,7 @@ const reportRouter = (io, connectedClients) => {
     if (!reportId) {
       return res
         .status(400)
-        .json({ status: false, message: "report_id가 필요합니다." });
+        .json({ status: false, message: "reportId 필요합니다." });
     }
 
     try {
