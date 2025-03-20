@@ -76,6 +76,51 @@ const reportRouter = (io, connectedClients) => {
     }
   });
 
+  // 🔹 신고 상태 업데이트
+  router.post("/updateStatus", async (req, res) => {
+    const { reportId, status } = req.body;
+
+    if (!reportId || status === undefined) {
+      return res.status(400).json({
+        status: false,
+        message: "reportId와 status 값이 필요합니다.",
+      });
+    }
+
+    try {
+      const report = await Report.findById(reportId);
+
+      if (!report) {
+        return res.status(404).json({
+          status: false,
+          message: "해당 report_id의 데이터를 찾을 수 없습니다.",
+        });
+      }
+
+      report.status = status; // 상태 업데이트
+      await report.save(); // 변경 사항 저장
+
+      // 상태 변경된 신고를 해당 클라이언트에게 실시간 전송
+      const targetSocketId = connectedClients[report.tel];
+      if (targetSocketId) {
+        io.to(targetSocketId).emit("update_status", report);
+        console.log(`🔄 ${report.tel}에게 상태 업데이트 전송됨:`, report);
+      }
+
+      return res.json({
+        status: true,
+        message: "상태 업데이트 성공",
+        data: report,
+      });
+    } catch (error) {
+      console.error("📡 상태 업데이트 오류:", error);
+      return res.status(500).json({
+        status: false,
+        message: "서버 오류가 발생했습니다.",
+      });
+    }
+  });
+
   return router;
 };
 
