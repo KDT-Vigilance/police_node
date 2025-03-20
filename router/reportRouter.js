@@ -46,6 +46,36 @@ const reportRouter = (io, connectedClients) => {
     }
   });
 
+  // 🔹 특정 tel 값을 받아 해당하는 report 리스트 반환
+  router.post("/myReport", async (req, res) => {
+    const { tel } = req.body;
+
+    if (!tel) {
+      return res
+        .status(400)
+        .json({ status: false, message: "tel 값이 필요합니다." });
+    }
+
+    try {
+      const reports = await Report.find({ tel }).sort({ createdAt: -1 }); // 최신순 정렬
+
+      if (!reports.length) {
+        return res.json({
+          status: false,
+          message: "해당 전화번호로 등록된 신고가 없습니다.",
+        });
+      }
+
+      return res.json({ status: true, reports });
+    } catch (error) {
+      console.error("📡 myReport 데이터 검색 오류:", error);
+      return res.status(500).json({
+        status: false,
+        message: "서버 오류가 발생했습니다.",
+      });
+    }
+  });
+
   return router;
 };
 
