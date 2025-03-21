@@ -50,6 +50,8 @@ const reportRouter = (io, connectedClients) => {
   router.post("/myReport", async (req, res) => {
     const { tel } = req.body;
 
+    console.log(tel, "에서 myReport 요청이 옴");
+
     if (!tel) {
       return res
         .status(400)
@@ -65,8 +67,9 @@ const reportRouter = (io, connectedClients) => {
           message: "해당 전화번호로 등록된 신고가 없습니다.",
         });
       }
+      console.log("myReport return ", reports);
 
-      return res.json({ status: true, reports });
+      return res.json({ status: true, data: reports });
     } catch (error) {
       console.error("📡 myReport 데이터 검색 오류:", error);
       return res.status(500).json({
